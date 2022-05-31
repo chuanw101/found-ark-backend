@@ -12,7 +12,7 @@ GroupMember.init({
         autoIncrement: true,
     },
     group_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'group',
@@ -20,10 +20,17 @@ GroupMember.init({
         }
     },
     user_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'user',
+            key: 'id',
+        }
+    },
+    char_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'character',
             key: 'id',
         }
     },

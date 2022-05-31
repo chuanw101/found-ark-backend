@@ -22,13 +22,14 @@ Group.belongsTo(User, {
     foreignKey: "creator_id"
 });
 User.hasMany(Group, {
+    as: 'createdgroup',
     foreignKey: "creator_id"
 });
 
 // Many to many relationship between User and Group through GroupMember
 User.belongsToMany(Group, {
     through: GroupMember,
-    as: "mygroup",
+    as: 'joinedgroup',
     foreignKey: 'user_id',
 });
 Group.belongsToMany(User, {

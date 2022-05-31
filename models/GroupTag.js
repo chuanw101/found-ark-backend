@@ -12,7 +12,7 @@ GroupTag.init({
         autoIncrement: true,
     },
     group_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'group',
@@ -20,7 +20,7 @@ GroupTag.init({
         }
     },
     tag_id: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'tag',
