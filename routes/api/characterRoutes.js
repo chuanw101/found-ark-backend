@@ -1,11 +1,15 @@
 const router = require('express').Router();
-const { User, Character, Group } = require('../../models');
+const { Character, User } = require('../../models');
 
 //find all
 router.get("/", async (req, res) => {
     try {
         const characters = await Character.findAll({
-        })
+            include: [{
+                model: User,
+                as: 'owner',
+            }]
+        });
         res.json(characters);
     }
     catch (err) {
@@ -17,6 +21,10 @@ router.get("/", async (req, res) => {
 router.get("/:owner_id", async (req, res) => {
     try {
         const characters = await Character.findAll({
+            include: [{
+                model: User,
+                as: 'owner',
+            }],
             where: {'owner_id': req.params.owner_id}
         })
         res.json(characters);
