@@ -27,6 +27,13 @@ GroupMember.init({
             key: 'id',
         }
     },
+    char_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'character',
+            key: 'id',
+        }
+    },
     approved: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
