@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
         if (req.body.tags?.length) {
             // create tag if not already in db, create association with group
             for (const tag of req.body.tags) {
-                const curTag = await Tag.findOrCreate({where: { tag_name:tag }});
+                const curTag = await Tag.findOrCreate({ where: { tag_name: tag } });
                 await GroupTag.create({
                     group_id: newGroup.id,
                     tag_id: curTag.id,
@@ -92,6 +92,9 @@ router.put("/:id", async (req, res) => {
     }
     try {
         const curGroup = await Group.findByPk(req.params.id);
+        if (!curGroup) {
+            return res.status(404).json({ msg: "group not found" });
+        }
         // only creator can update Group
         if (curGroup.creator_id != req.session?.user?.id) {
             return res.status(401).json({ msg: "You don't have access to update this group!" })
@@ -114,6 +117,63 @@ router.put("/:id", async (req, res) => {
     }
 });
 
+//create new tag for group
+router.post("/:id/tag/:tag_name", async (req, res) => {
+    if (!req.session?.user) {
+        return res.status(401).json({ msg: "must log in to update group!" })
+    }
+    try {
+        const curGroup = await Group.findByPk(req.params.id);
+        if (!curGroup) {
+            return res.status(404).json({ msg: "group not found" });
+        }
+        // only creator can add new tag
+        if (curGroup.creator_id != req.session?.user?.id) {
+            return res.status(401).json({ msg: "You don't have access to add tag for this group!" })
+        }
+        const curTag = await Tag.findOrCreate({ where: { tag_name: req.params.tag_name } });
+        await GroupTag.create({
+            group_id: curGroup.id,
+            tag_id: curTag.id,
+        })
+        res.json(curTag);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: "an error occured", err });
+    }
+});
+
+//delete tag for group
+router.delete("/:id/tag/:tag_name", async (req, res) => {
+    if (!req.session?.user) {
+        return res.status(401).json({ msg: "must log in to update group!" })
+    }
+    try {
+        const curGroup = await Group.findByPk(req.params.id);
+        if (!curGroup) {
+            return res.status(404).json({ msg: "group not found" });
+        }
+        // only creator can add new tag
+        if (curGroup.creator_id != req.session?.user?.id) {
+            return res.status(401).json({ msg: "You don't have access to add tag for this group!" })
+        }
+        const curTag = await Tag.findOne({ where: { tag_name: req.params.tag_name } });
+        if (!curTag) {
+            return res.status(404).json({ msg: "Tag not found" });
+        }
+        const delGroupTag = await GroupTag.destroy({
+            where: {
+                group_id: curGroup.id,
+                tag_id: curTag.id,
+            }
+        })
+        res.json(delGroupTag);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: "an error occured", err });
+    }
+});
+
 //delete a Group
 router.delete("/:id", async (req, res) => {
     if (!req.session.user) {
@@ -121,13 +181,21 @@ router.delete("/:id", async (req, res) => {
     }
     try {
         const curGroup = await Group.findByPk(req.params.id);
+        if (!curGroup) {
+            return res.status(404).json({ msg: "group not found" });
+        }
         // only creator can delete Group
         if (curGroup.owner_id != req.session?.user?.id) {
-            return res.status(401).json({ msg: "you don't have access to delete this Group!" })
+            return res.status(401).json({ msg: "you don't have access to delete this Group!" });
+        }
+        const curTag = await Tag.findOne({ where: { tag_name: req.params.tag_name } });
+        if (!curTag) {
+            return res.status(404).json({ msg: "tag not found"} );
         }
         const delGroup = await Group.destroy({
             where: {
-                id: req.params.id
+                group_id: curGroup.id,
+                tag_id: curTag.id,
             }
         })
         res.json(delGroup);
