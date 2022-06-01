@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag } = require('../../models');
+const { User, Group, Tag, GroupTag, Character } = require('../../models');
 
 //find all
 router.get("/", async (req, res) => {
@@ -42,7 +42,7 @@ router.get("/:id", async (req, res) => {
             }, {
                 model: User,
                 as: 'applicant',
-                where: { '$applicant.groupmember.approved$': false }, required: false
+                where: { '$applicant.groupmember.approved$': false }, required: false,
             }, {
                 model: Tag,
                 as: 'tag',
