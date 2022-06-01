@@ -8,7 +8,7 @@ router.post("/:group_id", async (req, res) => {
         return res.status(401).json({ msg: "must log in to apply for group!" });
     }
     try {
-        const group = await Event.findByPk(req.params.group_id);
+        const group = await Group.findByPk(req.params.group_id);
         if (!group) {
             return res.status(404).json({ msg: "group not found" });
         }

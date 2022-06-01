@@ -185,7 +185,7 @@ router.delete("/:id", async (req, res) => {
             return res.status(404).json({ msg: "group not found" });
         }
         // only creator can delete Group
-        if (curGroup.owner_id != req.session?.user?.id) {
+        if (curGroup.creator_id != req.session?.user?.id) {
             return res.status(401).json({ msg: "you don't have access to delete this Group!" });
         }
         const curTag = await Tag.findOne({ where: { tag_name: req.params.tag_name } });
