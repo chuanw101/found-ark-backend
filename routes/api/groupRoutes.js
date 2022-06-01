@@ -2,26 +2,49 @@ const router = require('express').Router();
 const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
 
 //find all
+//if filter should be /?filter=filter1&filter=filter2 etc.
 router.get("/", async (req, res) => {
     try {
-        const groups = await Group.findAll({
-            include: [{
-                model: User,
-                as: 'creator',
-            }, {
-                model: User,
-                as: 'member',
-                where: { '$member.groupmember.approved$': true }, required: false
-            }, {
-                model: User,
-                as: 'applicant',
-                where: { '$applicant.groupmember.approved$': false }, required: false
-            }, {
-                model: Tag,
-                as: 'tag',
-            }],
-        })
-        res.json(groups);
+        if (req.query?.filter) {
+            const groups = await Group.findAll({
+                include: [{
+                    model: User,
+                    as: 'creator',
+                }, {
+                    model: User,
+                    as: 'member',
+                    where: { '$member.groupmember.approved$': true }, required: false
+                }, {
+                    model: User,
+                    as: 'applicant',
+                    where: { '$applicant.groupmember.approved$': false }, required: false
+                }, {
+                    model: Tag,
+                    as: 'tag',
+                    where: { '$tag.tag_name$': req.query.filter }
+                }],
+            })
+            res.json(groups);
+        } else {
+            const groups = await Group.findAll({
+                include: [{
+                    model: User,
+                    as: 'creator',
+                }, {
+                    model: User,
+                    as: 'member',
+                    where: { '$member.groupmember.approved$': true }, required: false
+                }, {
+                    model: User,
+                    as: 'applicant',
+                    where: { '$applicant.groupmember.approved$': false }, required: false
+                }, {
+                    model: Tag,
+                    as: 'tag',
+                }],
+            })
+            res.json(groups);
+        }
     }
     catch (err) {
         res.status(500).json({ msg: "an error occured", err });
