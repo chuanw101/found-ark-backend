@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag, Character } = require('../../models');
+const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
 
 //find all
 router.get("/", async (req, res) => {
@@ -67,6 +67,13 @@ router.post("/", async (req, res) => {
             description: req.body.description,
             discord: req.body.discord,
             time: req.body.time,
+        });
+        // join group your self
+        await GroupMember.create({
+            group_id: newGroup.id,
+            user_id: req.session.user.id,
+            char_id: req.body.char_id,
+            approved: true,
         });
         if (req.body.tags?.length) {
             // create tag if not already in db, create association with group
