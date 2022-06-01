@@ -23,6 +23,12 @@ router.get("/", async (req, res) => {
     }
 });
 
+// logout
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.json("logged out");
+});
+
 //find user by id
 router.get("/:id", async (req, res) => {
     try {
@@ -70,11 +76,6 @@ router.post('/login', async (req, res) => {
     catch (err) {
         res.status(500).json({ msg: "an error occured", err });
     }
-});
-
-// logout
-router.get('/logout', (req, res) => {
-    req.session.destroy();
 });
 
 //  change password

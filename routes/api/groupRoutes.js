@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
 
-//find all
+//find all, only show groups in user region if logged in
 //if filter should be /?filter=filter1&filter=filter2 etc.
 router.get("/", async (req, res) => {
     try {
