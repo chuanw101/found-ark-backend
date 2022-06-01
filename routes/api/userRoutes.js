@@ -75,6 +75,9 @@ router.post('/login', async (req, res) => {
 //  change password
 router.put('/changepw/:id', async (req, res) => {
     try {
+        if (!req.body?.newPass) {
+            return res.status(404).json({ msg: "must enter new password!" });
+        }
         const userDb = await User.findOne({
             where: {
                 id: req.params.id
@@ -83,12 +86,12 @@ router.put('/changepw/:id', async (req, res) => {
         if (bcrypt.compareSync(req.body.currentPass, userDb.password)) {
             await User.update(
                 {
-                    user_name: userDb.user_name,
                     password: req.body.newPass,
                 }, {
                 where: {
                     id: req.params.id
-                }
+                }, 
+                individualHooks: true,
             });
             res.send("Password changed");
         }
