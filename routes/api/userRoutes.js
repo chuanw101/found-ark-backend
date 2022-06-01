@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { User, Character, Group } = require('../../models');
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 //find all
 router.get("/", async (req, res) => {
@@ -62,12 +63,18 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ msg: "wrong login credentials" })
         }
         if (bcrypt.compareSync(req.body.password, foundUser.password)) {
-            req.session.user = {
-                id: foundUser.id,
-                user_name: foundUser.user_name,
-                region: foundUser.region,
-                logged_in: true
-            }
+            const token = jwt.sign(
+                {
+                    user_name: foundUser.user_name,
+                    id: foundUser.id,
+                    region: foundUser.region
+                },
+                process.env.JWT_SECRET,
+            );
+            res.json({ 
+                token: token, 
+                user: foundUser
+            });
             return res.json(foundUser)
         } else {
             return res.status(400).json({ msg: "wrong login credentials" })
@@ -110,21 +117,25 @@ router.put('/changepw/:id', async (req, res) => {
 });
 
 // signup
-router.post("/signup", (req, res) => {
-    User.create(req.body)
-        .then(newUser => {
-            req.session.user = {
-                id: newUser.id,
+router.post("/signup", async (req, res) => {
+    try {
+        const newUser = await User.create(req.body);
+        //creating the token 
+        const token = jwt.sign(
+            {
                 user_name: newUser.user_name,
-                region: newUser.region,
-                logged_in: true
-            }
-            res.json(newUser);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({ msg: "User name taken", err });
+                id: newUser.id,
+                region: newUser.region
+            },
+            process.env.JWT_SECRET,
+        );
+        res.json({ 
+            token: token, 
+            user: newUser
         });
+    } catch (err) {
+        res.status(500).json({ msg: "User name taken", err });
+    }
 });
 
 module.exports = router;
