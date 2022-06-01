@@ -24,12 +24,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-// logout
-router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.json("logged out");
-});
-
 //find user by id
 router.get("/:id", async (req, res) => {
     try {
@@ -47,6 +41,30 @@ router.get("/:id", async (req, res) => {
         res.json(user);
     }
     catch (err) {
+        res.status(500).json({ msg: "an error occured", err });
+    }
+});
+
+//update user
+router.put("/:id", async (req, res) => {
+    try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        if(tokenData?.id != req.params.id) {
+            return res.status(404).json({ msg:"You are not authorized to change this user "})
+        }
+
+        const updatedUser = await User.update({
+            region: req.body.region,
+            introduction: req.body.introduction,
+        }, {
+            where: {
+                id: req.params.id,
+            }
+        });
+        res.json(updatedUser);
+    } catch (err) {
+        console.log(err);
         res.status(500).json({ msg: "an error occured", err });
     }
 });
@@ -71,11 +89,10 @@ router.post('/login', async (req, res) => {
                 },
                 process.env.JWT_SECRET,
             );
-            res.json({ 
-                token: token, 
+            return res.json({
+                token: token,
                 user: foundUser
             });
-            return res.json(foundUser)
         } else {
             return res.status(400).json({ msg: "wrong login credentials" })
         }
@@ -129,8 +146,8 @@ router.post("/signup", async (req, res) => {
             },
             process.env.JWT_SECRET,
         );
-        res.json({ 
-            token: token, 
+        res.json({
+            token: token,
             user: newUser
         });
     } catch (err) {
