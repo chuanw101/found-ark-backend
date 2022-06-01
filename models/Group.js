@@ -23,6 +23,10 @@ Group.init({
             key: 'id',
         }
     },
+    region: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     description: {
         type: DataTypes.STRING,
         defaultValue: 'Come join us!',

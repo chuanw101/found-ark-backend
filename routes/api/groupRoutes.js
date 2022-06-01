@@ -5,45 +5,90 @@ const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
 //if filter should be /?filter=filter1&filter=filter2 etc.
 router.get("/", async (req, res) => {
     try {
-        if (req.query?.filter) {
-            const groups = await Group.findAll({
-                include: [{
-                    model: User,
-                    as: 'creator',
-                }, {
-                    model: User,
-                    as: 'member',
-                    where: { '$member.groupmember.approved$': true }, required: false
-                }, {
-                    model: User,
-                    as: 'applicant',
-                    where: { '$applicant.groupmember.approved$': false }, required: false
-                }, {
-                    model: Tag,
-                    as: 'tag',
-                    where: { '$tag.tag_name$': req.query.filter }
-                }],
-            })
-            res.json(groups);
+        if (!req.session.user) {
+            if (req.query?.filter) {
+                const groups = await Group.findAll({
+                    include: [{
+                        model: User,
+                        as: 'creator',
+                    }, {
+                        model: User,
+                        as: 'member',
+                        where: { '$member.groupmember.approved$': true }, required: false
+                    }, {
+                        model: User,
+                        as: 'applicant',
+                        where: { '$applicant.groupmember.approved$': false }, required: false
+                    }, {
+                        model: Tag,
+                        as: 'tag',
+                        where: { '$tag.tag_name$': req.query.filter }
+                    }],
+                })
+                res.json(groups);
+            } else {
+                const groups = await Group.findAll({
+                    include: [{
+                        model: User,
+                        as: 'creator',
+                    }, {
+                        model: User,
+                        as: 'member',
+                        where: { '$member.groupmember.approved$': true }, required: false
+                    }, {
+                        model: User,
+                        as: 'applicant',
+                        where: { '$applicant.groupmember.approved$': false }, required: false
+                    }, {
+                        model: Tag,
+                        as: 'tag',
+                    }],
+                })
+                res.json(groups);
+            }
         } else {
-            const groups = await Group.findAll({
-                include: [{
-                    model: User,
-                    as: 'creator',
-                }, {
-                    model: User,
-                    as: 'member',
-                    where: { '$member.groupmember.approved$': true }, required: false
-                }, {
-                    model: User,
-                    as: 'applicant',
-                    where: { '$applicant.groupmember.approved$': false }, required: false
-                }, {
-                    model: Tag,
-                    as: 'tag',
-                }],
-            })
-            res.json(groups);
+            if (req.query?.filter) {
+                const groups = await Group.findAll({
+                    include: [{
+                        model: User,
+                        as: 'creator',
+                    }, {
+                        model: User,
+                        as: 'member',
+                        where: { '$member.groupmember.approved$': true }, required: false
+                    }, {
+                        model: User,
+                        as: 'applicant',
+                        where: { '$applicant.groupmember.approved$': false }, required: false
+                    }, {
+                        model: Tag,
+                        as: 'tag',
+                        where: { '$tag.tag_name$': req.query.filter }
+                    }],
+                    where: { 'region':req.session.user.region }
+                })
+                res.json(groups);
+            } else {
+                const groups = await Group.findAll({
+                    include: [{
+                        model: User,
+                        as: 'creator',
+                    }, {
+                        model: User,
+                        as: 'member',
+                        where: { '$member.groupmember.approved$': true }, required: false
+                    }, {
+                        model: User,
+                        as: 'applicant',
+                        where: { '$applicant.groupmember.approved$': false }, required: false
+                    }, {
+                        model: Tag,
+                        as: 'tag',
+                    }],
+                    where: { 'region':req.session.user.region }
+                })
+                res.json(groups);
+            }
         }
     }
     catch (err) {
@@ -86,6 +131,7 @@ router.post("/", async (req, res) => {
     try {
         const newGroup = await Group.create({
             creator_id: req.session.user.id,
+            region: req.session.user.region,
             group_name: req.body.group_name,
             description: req.body.description,
             discord: req.body.discord,
