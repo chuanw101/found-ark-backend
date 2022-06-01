@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
 //find group by id
 router.get("/:id", async (req, res) => {
     try {
-        const group = await Group.findByPk(params.req.id, {
+        const group = await Group.findByPk(req.params.id, {
             include: [{
                 model: User,
                 as: 'creator',

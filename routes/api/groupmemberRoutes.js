@@ -69,7 +69,7 @@ router.delete("/:group_id", async (req, res) => {
                 return res.status(404).json({ msg: "must enter the user you are rejecting" });
             }
         } else {
-            userLeaving = seq.session.user.id;
+            userLeaving = req.session.user.id;
         }
 
         const delMember = await GroupMember.destroy({
