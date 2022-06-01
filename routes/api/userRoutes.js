@@ -23,6 +23,12 @@ router.get("/", async (req, res) => {
     }
 });
 
+// logout
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.json("logged out");
+});
+
 //find user by id
 router.get("/:id", async (req, res) => {
     try {
@@ -59,6 +65,7 @@ router.post('/login', async (req, res) => {
             req.session.user = {
                 id: foundUser.id,
                 user_name: foundUser.user_name,
+                region: foundUser.region,
                 logged_in: true
             }
             return res.json(foundUser)
@@ -70,7 +77,6 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ msg: "an error occured", err });
     }
 });
-
 
 //  change password
 router.put('/changepw/:id', async (req, res) => {
@@ -90,7 +96,7 @@ router.put('/changepw/:id', async (req, res) => {
                 }, {
                 where: {
                     id: req.params.id
-                }, 
+                },
                 individualHooks: true,
             });
             res.send("Password changed");
@@ -110,6 +116,7 @@ router.post("/signup", (req, res) => {
             req.session.user = {
                 id: newUser.id,
                 user_name: newUser.user_name,
+                region: newUser.region,
                 logged_in: true
             }
             res.json(newUser);
