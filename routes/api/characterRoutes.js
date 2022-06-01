@@ -17,8 +17,24 @@ router.get("/", async (req, res) => {
     }
 });
 
+//find character by id
+router.get("/:id", async (req, res) => {
+    try {
+        const character = await Character.findByPk(req.params.id, {
+            include: [{
+                model: User,
+                as: 'owner',
+            }]
+        });
+        res.json(character);
+    }
+    catch (err) {
+        res.status(500).json({ msg: "an error occured", err });
+    }
+});
+
 //find character by owner_id
-router.get("/:owner_id", async (req, res) => {
+router.get("/owner/:owner_id", async (req, res) => {
     try {
         const characters = await Character.findAll({
             include: [{

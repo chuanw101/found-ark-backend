@@ -1,27 +1,50 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag } = require('../../models');
+const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
 
 //find all
+//if filter should be /?filter=filter1&filter=filter2 etc.
 router.get("/", async (req, res) => {
     try {
-        const groups = await Group.findAll({
-            include: [{
-                model: User,
-                as: 'creator',
-            }, {
-                model: User,
-                as: 'member',
-                where: { '$member.groupmember.approved$': true }, required: false
-            }, {
-                model: User,
-                as: 'applicant',
-                where: { '$applicant.groupmember.approved$': false }, required: false
-            }, {
-                model: Tag,
-                as: 'tag',
-            }],
-        })
-        res.json(groups);
+        if (req.query?.filter) {
+            const groups = await Group.findAll({
+                include: [{
+                    model: User,
+                    as: 'creator',
+                }, {
+                    model: User,
+                    as: 'member',
+                    where: { '$member.groupmember.approved$': true }, required: false
+                }, {
+                    model: User,
+                    as: 'applicant',
+                    where: { '$applicant.groupmember.approved$': false }, required: false
+                }, {
+                    model: Tag,
+                    as: 'tag',
+                    where: { '$tag.tag_name$': req.query.filter }
+                }],
+            })
+            res.json(groups);
+        } else {
+            const groups = await Group.findAll({
+                include: [{
+                    model: User,
+                    as: 'creator',
+                }, {
+                    model: User,
+                    as: 'member',
+                    where: { '$member.groupmember.approved$': true }, required: false
+                }, {
+                    model: User,
+                    as: 'applicant',
+                    where: { '$applicant.groupmember.approved$': false }, required: false
+                }, {
+                    model: Tag,
+                    as: 'tag',
+                }],
+            })
+            res.json(groups);
+        }
     }
     catch (err) {
         res.status(500).json({ msg: "an error occured", err });
@@ -31,7 +54,7 @@ router.get("/", async (req, res) => {
 //find group by id
 router.get("/:id", async (req, res) => {
     try {
-        const group = await Group.findByPk(params.req.id, {
+        const group = await Group.findByPk(req.params.id, {
             include: [{
                 model: User,
                 as: 'creator',
@@ -42,7 +65,7 @@ router.get("/:id", async (req, res) => {
             }, {
                 model: User,
                 as: 'applicant',
-                where: { '$applicant.groupmember.approved$': false }, required: false
+                where: { '$applicant.groupmember.approved$': false }, required: false,
             }, {
                 model: Tag,
                 as: 'tag',
@@ -68,13 +91,21 @@ router.post("/", async (req, res) => {
             discord: req.body.discord,
             time: req.body.time,
         });
+        // join group your self
+        await GroupMember.create({
+            group_id: newGroup.id,
+            user_id: req.session.user.id,
+            char_id: req.body.char_id,
+            approved: true,
+        });
         if (req.body.tags?.length) {
             // create tag if not already in db, create association with group
             for (const tag of req.body.tags) {
                 const curTag = await Tag.findOrCreate({ where: { tag_name: tag } });
+                const data = JSON.parse(JSON.stringify(curTag))[0];
                 await GroupTag.create({
                     group_id: newGroup.id,
-                    tag_id: curTag.id,
+                    tag_id: data.id,
                 })
             }
         }
@@ -132,11 +163,14 @@ router.post("/:id/tag/:tag_name", async (req, res) => {
             return res.status(401).json({ msg: "You don't have access to add tag for this group!" })
         }
         const curTag = await Tag.findOrCreate({ where: { tag_name: req.params.tag_name } });
-        await GroupTag.create({
-            group_id: curGroup.id,
-            tag_id: curTag.id,
+        const data = JSON.parse(JSON.stringify(curTag))[0];
+        const newTag = await GroupTag.findOrCreate({
+            where: {
+                group_id: curGroup.id,
+                tag_id: data.id,
+            }
         })
-        res.json(curTag);
+        res.json(newTag);
     } catch (err) {
         console.log(err);
         res.status(500).json({ msg: "an error occured", err });
@@ -185,17 +219,12 @@ router.delete("/:id", async (req, res) => {
             return res.status(404).json({ msg: "group not found" });
         }
         // only creator can delete Group
-        if (curGroup.owner_id != req.session?.user?.id) {
+        if (curGroup.creator_id != req.session?.user?.id) {
             return res.status(401).json({ msg: "you don't have access to delete this Group!" });
-        }
-        const curTag = await Tag.findOne({ where: { tag_name: req.params.tag_name } });
-        if (!curTag) {
-            return res.status(404).json({ msg: "tag not found"} );
         }
         const delGroup = await Group.destroy({
             where: {
-                group_id: curGroup.id,
-                tag_id: curTag.id,
+                id: req.params.id,
             }
         })
         res.json(delGroup);
