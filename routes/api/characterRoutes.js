@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { Character, User } = require('../../models');
+const jwt = require("jsonwebtoken");
 
 //find all
 router.get("/", async (req, res) => {
@@ -52,12 +53,12 @@ router.get("/owner/:owner_id", async (req, res) => {
 
 //add character to logged in user
 router.post("/", async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ msg: "must log in to add character!" })
-    }
     try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+
         const newChar = await Character.create({
-            owner_id: req.session.user.id,
+            owner_id: tokenData.id,
             char_name: req.body.char_name,
             class: req.body.class,
             item_lvl: req.body.item_lvl,
@@ -75,13 +76,12 @@ router.post("/", async (req, res) => {
 
 //update character
 router.put("/:id", async (req, res) => {
-    if (!req.session?.user) {
-        return res.status(401).json({ msg: "must log in to change character!" })
-    }
     try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const curCharacter = await Character.findByPk(req.params.id);
         // only creator can update Character
-        if (curCharacter.owner_id != req.session?.user?.id) {
+        if (curCharacter.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "You don't have access to change this Character!" })
         }
         const updatedCharacter = await Character.update({
@@ -95,7 +95,6 @@ router.put("/:id", async (req, res) => {
         }, {
             where: {
                 id: req.params.id,
-                owner_id: req.session.user.id
             }
         });
         res.json(updatedCharacter);
@@ -107,13 +106,12 @@ router.put("/:id", async (req, res) => {
 
 //delete a Character
 router.delete("/:id", async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ msg: "must log in to delete Character!" })
-    }
     try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const curCharacter = await Character.findByPk(req.params.id);
         // only creator can delete Character
-        if (curCharacter.owner_id != req.session?.user?.id) {
+        if (curCharacter.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "you don't have access to delete this Character!" })
         }
         const delCharacter = await Character.destroy({
