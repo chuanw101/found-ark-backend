@@ -85,7 +85,8 @@ router.post('/login', async (req, res) => {
                 {
                     user_name: foundUser.user_name,
                     id: foundUser.id,
-                    region: foundUser.region
+                    region: foundUser.region,
+                    logged_in: true,
                 },
                 process.env.JWT_SECRET,
             );
@@ -142,7 +143,8 @@ router.post("/signup", async (req, res) => {
             {
                 user_name: newUser.user_name,
                 id: newUser.id,
-                region: newUser.region
+                region: newUser.region,
+                logged_in: true,
             },
             process.env.JWT_SECRET,
         );
