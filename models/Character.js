@@ -41,7 +41,7 @@ Character.init({
         type: DataTypes.STRING,
     },
     json_data: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
     }
 }, {
     sequelize,
