@@ -11,36 +11,59 @@ router.get("/", async (req, res) => {
             if (req.query?.filter) {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
-                        where: { '$tag.tag_name$': req.query.filter }
                     }],
                 })
                 res.json(groups);
             } else {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
@@ -53,20 +76,31 @@ router.get("/", async (req, res) => {
             if (req.query?.filter) {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
-                        where: { '$tag.tag_name$': req.query.filter }
                     }],
                     where: { 'region': tokenData.region }
                 })
@@ -74,16 +108,28 @@ router.get("/", async (req, res) => {
             } else {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',

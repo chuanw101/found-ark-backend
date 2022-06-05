@@ -27,7 +27,7 @@ router.put("/:group_id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        const curGroup = await Group.findByPk(req.params.id, {
+        const curGroup = await Group.findByPk(req.params.group_id, {
             include: [{
                 model: Character,
                 as: 'creator',
@@ -43,7 +43,7 @@ router.put("/:group_id", async (req, res) => {
             approved: true
         }, {
             where: {
-                group_id: group.id,
+                group_id: curGroup.id,
                 char_id: req.body.char_id,
             }
         })
@@ -59,7 +59,7 @@ router.delete("/:group_id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        const curGroup = await Group.findByPk(req.params.id, {
+        const curGroup = await Group.findByPk(req.params.group_id, {
             include: [{
                 model: Character,
                 as: 'creator',
