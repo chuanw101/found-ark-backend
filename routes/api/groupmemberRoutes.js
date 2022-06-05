@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { GroupMember, Group } = require('../../models');
+const { GroupMember, Group, Character } = require('../../models');
 const jwt = require("jsonwebtoken");
 
 //apply for group
@@ -13,8 +13,7 @@ router.post("/:group_id", async (req, res) => {
         }
         const newGroupMember = await GroupMember.create({
             group_id: req.params.group_id,
-            user_id: tokenData.id,
-            character_id: req.body.character_id,
+            char_id: req.body.char_id,
         })
         res.json(newGroupMember);
     } catch (err) {
@@ -28,11 +27,16 @@ router.put("/:group_id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        const group = await Group.findByPk(req.params.group_id);
-        if (!group) {
+        const curGroup = await Group.findByPk(req.params.id, {
+            include: [{
+                model: Character,
+                as: 'creator',
+            }]
+        });
+        if (!curGroup) {
             return res.status(404).json({ msg: "group not found" });
         }
-        if (group.creator_id != tokenData.id) {
+        if (curGroup?.creator?.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "only creator can approve members" });
         }
         const updatedMember = await GroupMember.update({
@@ -40,7 +44,7 @@ router.put("/:group_id", async (req, res) => {
         }, {
             where: {
                 group_id: group.id,
-                user_id: req.body.user_id,
+                char_id: req.body.char_id,
             }
         })
         res.json(updatedMember);
@@ -55,24 +59,31 @@ router.delete("/:group_id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        const group = await Group.findByPk(req.params.group_id);
-        if (!group) {
+        const curGroup = await Group.findByPk(req.params.id, {
+            include: [{
+                model: Character,
+                as: 'creator',
+            }]
+        });
+        if (!curGroup) {
             return res.status(404).json({ msg: "group not found" });
         }
-        let userLeaving;
-        if (group.creator_id == tokenData.id) {
-            userLeaving = req.body.user_id;
-            if (!userLeaving) {
-                return res.status(404).json({ msg: "must enter the user you are rejecting" });
-            }
-        } else {
-            userLeaving = tokenData.id;
+        const charLeaving = req.body.char_id;
+        if (!charLeaving) {
+            return res.status(404).json({ msg: "must enter char_id" });
         }
-
+        // check if char_id entered belongs to user if not creator of group
+        if (curGroup?.creator?.owner_id != tokenData.id) {
+            const curChar = await Character.findByPk(req.body.char_id);
+            if (curChar.owner_id != tokenData.id) {
+                return res.status(401).json({ msg: "that's not your character" });
+            }
+        }
+        // pass all checks, go ahead and delete group member
         const delMember = await GroupMember.destroy({
             where: {
                 group_id: req.params.group_id,
-                user_id: userLeaving,
+                char_id: charLeaving,
             }
         })
         res.json(delMember);

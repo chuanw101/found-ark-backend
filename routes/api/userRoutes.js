@@ -9,16 +9,18 @@ router.get("/", async (req, res) => {
         const users = await User.findAll({
             include: [{
                 model: Character,
-                include: [{
+                include: [ {
                     model: Group,
                     as: 'joined',
-                }]
-            }, {
-                model: Group,
-                as: 'createdgroup'
-            }, {
-                model: Group,
-                as: 'joinedgroup',
+                    where: { '$characters.joined.groupmember.approved$': true }, required: false,
+                }, {
+                    model: Group,
+                    as: 'applied',
+                    where: { '$characters.applied.groupmember.approved$': false }, required: false,
+                }, {
+                    model: Group,
+                    as: 'created',
+                },],
             },],
         })
         res.json(users);
@@ -34,12 +36,18 @@ router.get("/:id", async (req, res) => {
         const user = await User.findByPk(req.params.id, {
             include: [{
                 model: Character,
-            }, {
-                model: Group,
-                as: 'createdgroup'
-            }, {
-                model: Group,
-                as: 'joinedgroup',
+                include: [ {
+                    model: Group,
+                    as: 'joined',
+                    where: { '$characters.joined.groupmember.approved$': true }, required: false,
+                }, {
+                    model: Group,
+                    as: 'applied',
+                    where: { '$characters.applied.groupmember.approved$': false }, required: false,
+                }, {
+                    model: Group,
+                    as: 'created',
+                },],
             },],
         })
         res.json(user);
