@@ -15,11 +15,11 @@ Group.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
-    creator_id: {
+    creator_char_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'user',
+            model: 'character',
             key: 'id',
         }
     },

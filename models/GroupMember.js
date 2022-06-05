@@ -19,16 +19,17 @@ GroupMember.init({
             key: 'id',
         }
     },
-    user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'user',
-            key: 'id',
-        }
-    },
+    // user_id: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false,
+    //     references: {
+    //         model: 'user',
+    //         key: 'id',
+    //     }
+    // },
     char_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
             model: 'character',
             key: 'id',
@@ -38,6 +39,10 @@ GroupMember.init({
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
+    is_owner: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    }
 }, {
     sequelize,
     timestamps: true,

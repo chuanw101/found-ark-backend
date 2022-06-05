@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
+const { User, Group, Tag, GroupTag, GroupMember, Character } = require('../../models');
 const jwt = require("jsonwebtoken");
 
 //find all, only show groups in user region if logged in
@@ -11,36 +11,59 @@ router.get("/", async (req, res) => {
             if (req.query?.filter) {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
-                        where: { '$tag.tag_name$': req.query.filter }
                     }],
                 })
                 res.json(groups);
             } else {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
@@ -53,42 +76,65 @@ router.get("/", async (req, res) => {
             if (req.query?.filter) {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
-                        where: { '$tag.tag_name$': req.query.filter }
                     }],
-                    where: { 'region':tokenData.region }
+                    where: { 'region': tokenData.region }
                 })
                 res.json(groups);
             } else {
                 const groups = await Group.findAll({
                     include: [{
-                        model: User,
+                        model: Character,
                         as: 'creator',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }]
                     }, {
-                        model: User,
-                        as: 'member',
-                        where: { '$member.groupmember.approved$': true }, required: false
+                        model: Character,
+                        as: 'app_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$app_char.groupmember.approved$': false }, required: false,
                     }, {
-                        model: User,
-                        as: 'applicant',
-                        where: { '$applicant.groupmember.approved$': false }, required: false
+                        model: Character,
+                        as: 'member_char',
+                        include: [{
+                            model: User,
+                            as: 'owner',
+                        }],
+                        where: { '$member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
                     }],
-                    where: { 'region':tokenData.region }
+                    where: { 'region': tokenData.region }
                 })
                 res.json(groups);
             }
@@ -104,16 +150,28 @@ router.get("/:id", async (req, res) => {
     try {
         const group = await Group.findByPk(req.params.id, {
             include: [{
-                model: User,
+                model: Character,
                 as: 'creator',
+                include: [{
+                    model: User,
+                    as: 'owner',
+                }]
             }, {
-                model: User,
-                as: 'member',
-                where: { '$member.groupmember.approved$': true }, required: false
+                model: Character,
+                as: 'app_char',
+                include: [{
+                    model: User,
+                    as: 'owner',
+                }],
+                where: { '$app_char.groupmember.approved$': false }, required: false,
             }, {
-                model: User,
-                as: 'applicant',
-                where: { '$applicant.groupmember.approved$': false }, required: false,
+                model: Character,
+                as: 'member_char',
+                include: [{
+                    model: User,
+                    as: 'owner',
+                }],
+                where: { '$member_char.groupmember.approved$': true }, required: false,
             }, {
                 model: Tag,
                 as: 'tag',
@@ -128,11 +186,11 @@ router.get("/:id", async (req, res) => {
 
 //create group, including tags
 router.post("/", async (req, res) => {
-    const token = req.headers?.authorization?.split(" ").pop();
-    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const newGroup = await Group.create({
-            creator_id: tokenData.id,
+            creator_char_id: req.body.creator_char_id,
             region: tokenData.region,
             group_name: req.body.group_name,
             description: req.body.description,
@@ -142,9 +200,9 @@ router.post("/", async (req, res) => {
         // join group your self
         await GroupMember.create({
             group_id: newGroup.id,
-            user_id: tokenData.id,
-            char_id: req.body.char_id,
+            char_id: req.body.creator_char_id,
             approved: true,
+            is_owner: true,
         });
         if (req.body.tags?.length) {
             // create tag if not already in db, create association with group
@@ -166,15 +224,20 @@ router.post("/", async (req, res) => {
 
 //update group, not including tags
 router.put("/:id", async (req, res) => {
-    const token = req.headers?.authorization?.split(" ").pop();
-    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     try {
-        const curGroup = await Group.findByPk(req.params.id);
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        const curGroup = await Group.findByPk(req.params.id, {
+            include: [{
+                model: Character,
+                as: 'creator',
+            }]
+        });
         if (!curGroup) {
             return res.status(404).json({ msg: "group not found" });
         }
         // only creator can update Group
-        if (curGroup.creator_id != tokenData.id) {
+        if (curGroup?.creator?.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "You don't have access to update this group!" })
         }
         const updatedGroup = await Group.update({
@@ -196,15 +259,20 @@ router.put("/:id", async (req, res) => {
 
 //create new tag for group
 router.post("/:id/tag/:tag_name", async (req, res) => {
-    const token = req.headers?.authorization?.split(" ").pop();
-    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     try {
-        const curGroup = await Group.findByPk(req.params.id);
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        const curGroup = await Group.findByPk(req.params.id, {
+            include: [{
+                model: Character,
+                as: 'creator',
+            }]
+        });
         if (!curGroup) {
             return res.status(404).json({ msg: "group not found" });
         }
         // only creator can add new tag
-        if (curGroup.creator_id != tokenData.id) {
+        if (curGroup?.creator?.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "You don't have access to add tag for this group!" })
         }
         const curTag = await Tag.findOrCreate({ where: { tag_name: req.params.tag_name } });
@@ -224,15 +292,20 @@ router.post("/:id/tag/:tag_name", async (req, res) => {
 
 //delete tag for group
 router.delete("/:id/tag/:tag_name", async (req, res) => {
-    const token = req.headers?.authorization?.split(" ").pop();
-    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     try {
-        const curGroup = await Group.findByPk(req.params.id);
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        const curGroup = await Group.findByPk(req.params.id, {
+            include: [{
+                model: Character,
+                as: 'creator',
+            }]
+        });
         if (!curGroup) {
             return res.status(404).json({ msg: "group not found" });
         }
         // only creator can add new tag
-        if (curGroup.creator_id != tokenData.id) {
+        if (curGroup?.creator?.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "You don't have access to add tag for this group!" })
         }
         const curTag = await Tag.findOne({ where: { tag_name: req.params.tag_name } });
@@ -254,15 +327,20 @@ router.delete("/:id/tag/:tag_name", async (req, res) => {
 
 //delete a Group
 router.delete("/:id", async (req, res) => {
-    const token = req.headers?.authorization?.split(" ").pop();
-    const tokenData = jwt.verify(token, process.env.JWT_SECRET);
     try {
-        const curGroup = await Group.findByPk(req.params.id);
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        const curGroup = await Group.findByPk(req.params.id, {
+            include: [{
+                model: Character,
+                as: 'creator',
+            }]
+        });
         if (!curGroup) {
             return res.status(404).json({ msg: "group not found" });
         }
         // only creator can delete Group
-        if (curGroup.creator_id != tokenData.id) {
+        if (curGroup?.creator?.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "you don't have access to delete this Group!" });
         }
         const delGroup = await Group.destroy({

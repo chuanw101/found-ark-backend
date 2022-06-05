@@ -16,30 +16,52 @@ User.hasMany(Character, {
     foreignKey: "owner_id"
 });
 
-// Many Group belong to one User(creator)
-Group.belongsTo(User, {
+// Many Group belong to one Character(creator)
+Group.belongsTo(Character, {
     as: 'creator',
-    foreignKey: "creator_id"
+    foreignKey: "creator_char_id"
 });
-User.hasMany(Group, {
-    as: 'createdgroup',
-    foreignKey: "creator_id"
+Character.hasMany(Group, {
+    as: 'created',
+    foreignKey: "creator_char_id"
 });
 
 // Many to many relationship between User and Group through GroupMember
-User.belongsToMany(Group, {
+// User.belongsToMany(Group, {
+//     through: GroupMember,
+//     as: 'joinedgroup',
+//     foreignKey: 'user_id',
+// });
+// Group.belongsToMany(User, {
+//     through: GroupMember,
+//     as: 'applicant',
+//     foreignKey: 'group_id',
+// });
+// Group.belongsToMany(User, {
+//     through: GroupMember,
+//     as: 'member',
+//     foreignKey: 'group_id',
+// });
+
+// Many to many relationship between Character and Group through GroupMember
+Character.belongsToMany(Group, {
     through: GroupMember,
-    as: 'joinedgroup',
-    foreignKey: 'user_id',
+    as: "joined",
+    foreignKey: 'char_id',
 });
-Group.belongsToMany(User, {
+Character.belongsToMany(Group, {
     through: GroupMember,
-    as: 'applicant',
+    as: "applied",
+    foreignKey: 'char_id',
+});
+Group.belongsToMany(Character, {
+    through: GroupMember,
+    as: 'app_char',
     foreignKey: 'group_id',
 });
-Group.belongsToMany(User, {
+Group.belongsToMany(Character, {
     through: GroupMember,
-    as: 'member',
+    as: 'member_char',
     foreignKey: 'group_id',
 });
 
