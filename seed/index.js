@@ -48,10 +48,14 @@ const groupmember = [
     {
         group_id:1,
         char_id:1,
+        approved:true,
+        is_owner:true,
     },
     {
         group_id:2,
         char_id:1,
+        approved:true,
+        is_owner:true,
     }
 ]
 
