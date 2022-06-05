@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag, GroupMember } = require('../../models');
+const { User, Group, Tag, GroupTag, GroupMember, Character } = require('../../models');
 const jwt = require("jsonwebtoken");
 
 //find all, only show groups in user region if logged in
@@ -114,6 +114,22 @@ router.get("/:id", async (req, res) => {
                 model: User,
                 as: 'applicant',
                 where: { '$applicant.groupmember.approved$': false }, required: false,
+            }, {
+                model: Character,
+                as: 'app_char',
+                include: [{
+                    model: User,
+                    as: 'owner',
+                }],
+                where: { '$app_char.groupmember.approved$': false }, required: false,
+            }, {
+                model: Character,
+                as: 'member_char',
+                include: [{
+                    model: User,
+                    as: 'owner',
+                }],
+                where: { '$member_char.groupmember.approved$': true }, required: false,
             }, {
                 model: Tag,
                 as: 'tag',

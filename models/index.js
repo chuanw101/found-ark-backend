@@ -43,6 +43,23 @@ Group.belongsToMany(User, {
     foreignKey: 'group_id',
 });
 
+// Many to many relationship between User and Group through GroupMember
+Character.belongsToMany(Group, {
+    through: GroupMember,
+    as: "joined",
+    foreignKey: 'char_id',
+});
+Group.belongsToMany(Character, {
+    through: GroupMember,
+    as: 'app_char',
+    foreignKey: 'group_id',
+});
+Group.belongsToMany(Character, {
+    through: GroupMember,
+    as: 'member_char',
+    foreignKey: 'group_id',
+});
+
 // Many to many relationship between Tag and Group through GroupTag
 Tag.belongsToMany(Group, {
     through: GroupTag,

@@ -9,6 +9,10 @@ router.get("/", async (req, res) => {
         const users = await User.findAll({
             include: [{
                 model: Character,
+                include: [{
+                    model: Group,
+                    as: 'joined',
+                }]
             }, {
                 model: Group,
                 as: 'createdgroup'
