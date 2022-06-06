@@ -40,13 +40,28 @@ router.get("/:id", async (req, res) => {
                     model: Group,
                     as: 'joined',
                     where: { '$characters.joined.groupmember.approved$': true }, required: false,
+                    include: [{
+                        model: Character,
+                        as: 'member_char',
+                        where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                    }],
                 }, {
                     model: Group,
                     as: 'applied',
                     where: { '$characters.applied.groupmember.approved$': false }, required: false,
+                    include: [{
+                        model: Character,
+                        as: 'member_char',
+                        where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                    }],
                 }, {
                     model: Group,
                     as: 'created',
+                    include: [{
+                        model: Character,
+                        as: 'member_char',
+                        where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                    }],
                 },],
             },],
         })
