@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Character, Group } = require('../../models');
+const { User, Character, Group, Tag } = require('../../models');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -44,6 +44,9 @@ router.get("/:id", async (req, res) => {
                         model: Character,
                         as: 'member_char',
                         where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                    }, {
+                        model: Tag,
+                        as: 'tag',
                     }],
                 }, {
                     model: Group,
@@ -53,6 +56,9 @@ router.get("/:id", async (req, res) => {
                         model: Character,
                         as: 'member_char',
                         where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                    }, {
+                        model: Tag,
+                        as: 'tag',
                     }],
                 }, {
                     model: Group,
@@ -61,6 +67,9 @@ router.get("/:id", async (req, res) => {
                         model: Character,
                         as: 'member_char',
                         where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                    }, {
+                        model: Tag,
+                        as: 'tag',
                     }],
                 },],
             },],
