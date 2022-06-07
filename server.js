@@ -17,6 +17,36 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(routes);
 
+const server = require('http').Server(app)
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:3000" || "https://found-ark.herokuapp.com",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("Connected to socket.io");
+  socket.on("setup", (id) => {
+    socket.join(id);
+    console.log("==============================")
+    console.log(id);
+    socket.emit("connected");
+  });
+
+  socket.on("new notification", (newNoti) => {
+    //if (!newNoti.reciever) return console.log("no reciever");
+    socket.to(newNoti.receiver).emit("message recieved", newNoti);
+    // socket.in(newNoti.receiver).emit("message recieved", newNoti);
+    // socket.broadcast.emit('message recieved', newNoti.receiver+" " +newNoti.message)
+  });
+
+  socket.off("setup", () => {
+    console.log("USER DISCONNECTED");
+    socket.leave(id);
+  });
+});
+
 sequelize.sync({ force: false }).then(() => {
-  app.listen(PORT, () => console.log('Now listening to port'+ PORT ));
+  server.listen(PORT, () => console.log('Now listening to port' + PORT));
 });
