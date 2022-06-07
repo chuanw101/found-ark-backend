@@ -90,7 +90,7 @@ router.put("/:id", async (req, res) => {
             return res.status(404).json({ msg:"You are not authorized to change this user "})
         }
 
-        const updatedUser = await User.update({
+        await User.update({
             region: req.body.region,
             introduction: req.body.introduction,
         }, {
@@ -98,7 +98,21 @@ router.put("/:id", async (req, res) => {
                 id: req.params.id,
             }
         });
-        res.json(updatedUser);
+
+        const newToken = jwt.sign(
+            {
+                user_name: tokenData.user_name,
+                id: req.params.id,
+                region: req.body.region,
+                logged_in: true,
+            },
+            process.env.JWT_SECRET,
+        );
+        const updatedUser = await User.findByPk(req.params.id);
+        return res.json({
+            token: newToken,
+            user: updatedUser
+        });
     } catch (err) {
         console.log(err);
         res.status(500).json({ msg: "an error occured", err });
