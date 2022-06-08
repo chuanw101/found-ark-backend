@@ -5,6 +5,7 @@ const Character = require('./Character');
 const Tag = require('./Tag');
 const GroupMember = require('./GroupMember');
 const GroupTag = require('./GroupTag');
+const Notification = require('./Notification');
 
 // Many Character belong to one User(owner)
 Character.belongsTo(User, {
@@ -25,6 +26,16 @@ Character.hasMany(Group, {
     as: 'created',
     foreignKey: "creator_char_id"
 });
+
+// Many Notification belong to one user (reciever)
+Notification.belongsTo(User, {
+    as: 'receiver',
+    foreignKey: 'receiver_id'
+});
+User.hasMany(Notification, { 
+    as: 'notis',
+    foreignKey: 'receiver_id'
+})
 
 // Many to many relationship between User and Group through GroupMember
 // User.belongsToMany(Group, {
@@ -83,4 +94,5 @@ module.exports = {
     Tag,
     GroupTag,
     GroupMember,
+    Notification,
 };

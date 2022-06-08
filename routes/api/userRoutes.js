@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Character, Group, Tag } = require('../../models');
+const { User, Character, Group, Tag, Notification } = require('../../models');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -87,7 +87,7 @@ router.put("/:id", async (req, res) => {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         if(tokenData?.id != req.params.id) {
-            return res.status(404).json({ msg:"You are not authorized to change this user "})
+            return res.status(401).json({ msg:"You are not authorized to change this user "})
         }
 
         await User.update({
@@ -123,6 +123,10 @@ router.put("/:id", async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const foundUser = await User.findOne({
+            include: [{
+                model: Notification,
+                as:'notis',
+            }],
             where: {
                 user_name: req.body.user_name
             }
