@@ -23,4 +23,50 @@ router.get("/receiver/:receiver_id", async (req, res) => {
     }
 });
 
+//set read
+router.put("/:id", async (req, res) => {
+    try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        if(tokenData?.id != req.params.id) {
+            return res.status(401).json({ msg:"You are not authorized "})
+        }
+
+        const updateNoti = await Notification.update({
+            read: true,
+        }, {
+            where: {
+                id: req.params.id,
+            }
+        });
+
+        return res.json(updateNoti);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: "an error occured", err });
+    }
+});
+
+//destroy noti
+router.delete("/:id", async (req, res) => {
+    try {
+        const token = req.headers?.authorization?.split(" ").pop();
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        if(tokenData?.id != req.params.id) {
+            return res.status(401).json({ msg:"You are not authorized "})
+        }
+
+        const delNoti = await Notification.destroy({
+            where: {
+                id: req.params.id,
+            }
+        });
+
+        return res.json(delNoti);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: "an error occured", err });
+    }
+});
+
 module.exports = router;

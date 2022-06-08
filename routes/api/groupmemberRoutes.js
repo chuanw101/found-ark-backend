@@ -28,14 +28,14 @@ router.post("/:group_id", async (req, res) => {
             where: {
                 receiver_id: group.creator.owner_id,
                 message: `New Applicants in Group: ${group.group_name}`,
-                group_id: curGroup.id,
+                group_id: group.id,
             },
         })
         if (!noti) {
             noti = await Notification.create({
                 receiver_id: group.creator.owner_id,
                 message: `New Applicants in Group: ${group.group_name}`,
-                group_id: curGroup.id,
+                group_id: group.id,
             })
         }
         if (noti.read) {
