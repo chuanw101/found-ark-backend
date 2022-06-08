@@ -87,7 +87,7 @@ router.put("/:id", async (req, res) => {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         if(tokenData?.id != req.params.id) {
-            return res.status(404).json({ msg:"You are not authorized to change this user "})
+            return res.status(401).json({ msg:"You are not authorized to change this user "})
         }
 
         await User.update({

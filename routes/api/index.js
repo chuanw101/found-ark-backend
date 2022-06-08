@@ -12,4 +12,7 @@ router.use('/groups', groupRoutes);
 const groupmemberRoutes = require('./groupmemberRoutes');
 router.use('/groupmembers', groupmemberRoutes);
 
+const notificationRoutes = require('./notificationRoutes');
+router.use('/notifications', notificationRoutes);
+
 module.exports = router;
