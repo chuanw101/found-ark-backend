@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { GroupMember, Group, Character, Notification } = require('../../models');
+const { GroupMember, Group, Character, Notification, User } = require('../../models');
 const jwt = require("jsonwebtoken");
 
 //apply for group
@@ -113,6 +113,12 @@ router.delete("/:group_id", async (req, res) => {
             if (curChar.owner_id != tokenData.id) {
                 return res.status(401).json({ msg: "that's not your character" });
             }
+            const curStatus = await GroupMember.findOne({
+                where: {
+                    group_id: req.params.group_id,
+                    char_id: charLeaving,
+                }
+            })
             // pass all checks, go ahead and delete group member
             const delMember = await GroupMember.destroy({
                 where: {
@@ -120,7 +126,16 @@ router.delete("/:group_id", async (req, res) => {
                     char_id: charLeaving,
                 }
             })
-            res.json(delMember)
+            if (curStatus.approved == true) {
+                const newNoti = await Notification.create({
+                    receiver_id: curGroup.creator.owner_id,
+                    message: `${curChar.char_name} Left your Group: ${curGroup.group_name}`,
+                    group_id: curGroup.id,
+                })
+                res.json(newNoti)
+            } else {
+                res.json(delMember)
+            }
         } else {
             // pass all checks, go ahead and delete group member
             await GroupMember.destroy({
