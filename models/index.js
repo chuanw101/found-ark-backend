@@ -94,4 +94,5 @@ module.exports = {
     Tag,
     GroupTag,
     GroupMember,
+    Notification,
 };

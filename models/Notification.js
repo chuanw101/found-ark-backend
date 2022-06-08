@@ -22,6 +22,13 @@ Notification.init({
     message: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    group_id: {
+        type: DataTypes.INTEGER,
+    },
+    read: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
     }
 }, {
     sequelize,
