@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag, GroupMember, Character } = require('../../models');
+const { User, Group, Tag, GroupTag, GroupMember, Character, Notification } = require('../../models');
 const jwt = require("jsonwebtoken");
 
 //find all, only show groups in user region if logged in
