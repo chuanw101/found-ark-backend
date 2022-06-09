@@ -76,9 +76,9 @@ router.get("/:id", async (req, res) => {
                 // },
                 ],
             },],
-            // order: [
-            //     [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
-            // ],
+            order: [
+                [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
+            ],
         })
         res.json(user);
     }
