@@ -41,6 +41,12 @@ router.post("/:group_id", async (req, res) => {
         if (noti.read) {
             await Notification.update({
                 read: false,
+            }, {
+                where: {
+                    receiver_id: group.creator.owner_id,
+                    message: `New Applicants in Group: ${group.group_name}`,
+                    group_id: group.id,
+                }
             })
             noti.read = false;
         }
@@ -152,7 +158,7 @@ router.delete("/:group_id", async (req, res) => {
             })
             res.json(newNoti);
         }
-        
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ msg: "an error occured", err });

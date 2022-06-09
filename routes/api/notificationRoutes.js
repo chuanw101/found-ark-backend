@@ -14,7 +14,8 @@ router.get("/receiver/:receiver_id", async (req, res) => {
         const notis = await Notification.findAll({
             where: {
                 receiver_id: req.params.receiver_id,
-            }
+            }, 
+            order: 'createdAt'
         });
         res.json(notis);
     }
