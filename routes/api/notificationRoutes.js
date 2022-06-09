@@ -15,7 +15,7 @@ router.get("/receiver/:receiver_id", async (req, res) => {
             where: {
                 receiver_id: req.params.receiver_id,
             }, 
-            order: 'createdAt'
+            order: [['updatedAt', 'DESC']]
         });
         res.json(notis);
     }
