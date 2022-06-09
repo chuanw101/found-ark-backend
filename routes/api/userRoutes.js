@@ -40,7 +40,9 @@ router.get("/:id", async (req, res) => {
                     model: Group,
                     as: 'joined',
                     where: { '$characters.joined.groupmember.approved$': true }, required: false,
-                    order: [['$characters.joined.updatedAt$']],
+                    order: [
+                        [ Group, { model: Group, as: 'joined' }, 'updatedAt', 'DESC' ]
+                      ],
                     include: [{
                         model: Character,
                         as: 'member_char',
