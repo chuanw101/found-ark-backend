@@ -114,17 +114,17 @@ router.delete("/:group_id", async (req, res) => {
             return res.status(404).json({ msg: "must enter char_id" });
         }
         // check if char_id entered belongs to user if not creator of group
+        const curStatus = await GroupMember.findOne({
+            where: {
+                group_id: req.params.group_id,
+                char_id: charLeaving,
+            }
+        })
         if (curGroup?.creator?.owner_id != tokenData.id) {
             const curChar = await Character.findByPk(req.body.char_id);
             if (curChar.owner_id != tokenData.id) {
                 return res.status(401).json({ msg: "that's not your character" });
             }
-            const curStatus = await GroupMember.findOne({
-                where: {
-                    group_id: req.params.group_id,
-                    char_id: charLeaving,
-                }
-            })
             // pass all checks, go ahead and delete group member
             const delMember = await GroupMember.destroy({
                 where: {
@@ -151,9 +151,13 @@ router.delete("/:group_id", async (req, res) => {
                 }
             })
             const receiver = await Character.findByPk(req.body.char_id);
+            let msg = `You were REJECTED from the Group: ${curGroup.group_name}`;
+            if (curStatus.approved == true) {
+                msg = `You were KICKED from the Group: ${curGroup.group_name}`;
+            }
             const newNoti = await Notification.create({
                 receiver_id: receiver.owner_id,
-                message: `You were REJECTED from the Group: ${curGroup.group_name}`,
+                message: msg,
                 group_id: curGroup.id,
             })
             res.json(newNoti);
