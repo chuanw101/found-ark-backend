@@ -134,7 +134,7 @@ router.delete("/:group_id", async (req, res) => {
             })
             if (curStatus.approved == true) {
                 const newNoti = await Notification.create({
-                    receiver_id: curGroup.creator.owner_id,
+                    receiver_id: curGroup.creator?.owner_id,
                     message: `${curChar.char_name} Left your Group: ${curGroup.group_name}`,
                     group_id: curGroup.id,
                 })
@@ -151,6 +151,9 @@ router.delete("/:group_id", async (req, res) => {
                 }
             })
             const receiver = await Character.findByPk(req.body.char_id);
+            if (!receiver) {
+                return res.status(404).json({ msg: "char not found" });
+            }
             let msg = `You were REJECTED from the Group: ${curGroup.group_name}`;
             if (curStatus.approved == true) {
                 msg = `You were KICKED from the Group: ${curGroup.group_name}`;
