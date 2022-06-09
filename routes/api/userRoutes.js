@@ -48,6 +48,9 @@ router.get("/:id", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
+                    order: [
+                        [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
+                    ],
                 }, {
                     model: Group,
                     as: 'applied',
@@ -75,9 +78,6 @@ router.get("/:id", async (req, res) => {
                     }],
                 },],
             },],
-            order: [
-                [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
-            ],
         })
         res.json(user);
     }
