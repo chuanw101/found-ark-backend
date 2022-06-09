@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
         const users = await User.findAll({
             include: [{
                 model: Character,
-                include: [ {
+                include: [{
                     model: Group,
                     as: 'joined',
                     where: { '$characters.joined.groupmember.approved$': true }, required: false,
@@ -36,13 +36,10 @@ router.get("/:id", async (req, res) => {
         const user = await User.findByPk(req.params.id, {
             include: [{
                 model: Character,
-                include: [ {
+                include: [{
                     model: Group,
                     as: 'joined',
                     where: { '$characters.joined.groupmember.approved$': true }, required: false,
-                    order: [
-                        [ Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC' ]
-                      ],
                     include: [{
                         model: Character,
                         as: 'member_char',
@@ -55,7 +52,7 @@ router.get("/:id", async (req, res) => {
                     model: Group,
                     as: 'applied',
                     where: { '$characters.applied.groupmember.approved$': false }, required: false,
-                    order: [['$characters.applied.updatedAt$', 'DESC']],
+                    //order: [['$characters.applied.updatedAt$', 'DESC']],
                     include: [{
                         model: Character,
                         as: 'member_char',
@@ -67,7 +64,7 @@ router.get("/:id", async (req, res) => {
                 }, {
                     model: Group,
                     as: 'created',
-                    order: [['$created.updatedAt$', 'DESC']],
+                    //order: [['$created.updatedAt$', 'DESC']],
                     include: [{
                         model: Character,
                         as: 'member_char',
@@ -78,6 +75,9 @@ router.get("/:id", async (req, res) => {
                     }],
                 },],
             },],
+            order: [
+                [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
+            ],
         })
         res.json(user);
     }
@@ -91,8 +91,8 @@ router.put("/:id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        if(tokenData?.id != req.params.id) {
-            return res.status(401).json({ msg:"You are not authorized to change this user "})
+        if (tokenData?.id != req.params.id) {
+            return res.status(401).json({ msg: "You are not authorized to change this user " })
         }
 
         await User.update({
@@ -130,7 +130,7 @@ router.post('/login', async (req, res) => {
         const foundUser = await User.findOne({
             include: [{
                 model: Notification,
-                as:'notis',
+                as: 'notis',
             }],
             where: {
                 user_name: req.body.user_name
