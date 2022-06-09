@@ -36,7 +36,7 @@ io.on("connection", (socket) => {
 
   socket.on("new notification", (newNoti) => {
     //if (!newNoti.reciever) return console.log("no reciever");
-    socket.to(newNoti.receiver).emit("message recieved", newNoti);
+    socket.to(newNoti.receiver_id).emit("message recieved", newNoti);
     // socket.in(newNoti.receiver).emit("message recieved", newNoti);
     // socket.broadcast.emit('message recieved', newNoti.receiver+" " +newNoti.message)
   });

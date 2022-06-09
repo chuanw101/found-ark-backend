@@ -14,7 +14,8 @@ router.get("/receiver/:receiver_id", async (req, res) => {
         const notis = await Notification.findAll({
             where: {
                 receiver_id: req.params.receiver_id,
-            }
+            }, 
+            order: [['updatedAt', 'DESC']]
         });
         res.json(notis);
     }
@@ -28,7 +29,8 @@ router.put("/:id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        if(tokenData?.id != req.params.id) {
+        const curNoti = await Notification.findByPk(req.params.id);
+        if(tokenData?.id != curNoti?.receiver_id) {
             return res.status(401).json({ msg:"You are not authorized "})
         }
 
@@ -52,7 +54,8 @@ router.delete("/:id", async (req, res) => {
     try {
         const token = req.headers?.authorization?.split(" ").pop();
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
-        if(tokenData?.id != req.params.id) {
+        const curNoti = await Notification.findByPk(req.params.id);
+        if(tokenData?.id != curNoti?.receiver_id) {
             return res.status(401).json({ msg:"You are not authorized "})
         }
 

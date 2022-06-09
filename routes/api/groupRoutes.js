@@ -37,6 +37,7 @@ router.get("/", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
+                    order: [['updatedAt', 'DESC']]
                 })
                 res.json(groups);
             } else {
@@ -68,6 +69,7 @@ router.get("/", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
+                    order: [['updatedAt', 'DESC']]
                 })
                 res.json(groups);
             }
@@ -102,7 +104,8 @@ router.get("/", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
-                    where: { 'region': tokenData.region }
+                    where: { 'region': tokenData.region },
+                    order: [['updatedAt', 'DESC']]
                 })
                 res.json(groups);
             } else {
@@ -134,7 +137,8 @@ router.get("/", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
-                    where: { 'region': tokenData.region }
+                    where: { 'region': tokenData.region },
+                    order: [['updatedAt', 'DESC']]
                 })
                 res.json(groups);
             }
@@ -176,6 +180,7 @@ router.get("/:id", async (req, res) => {
                 model: Tag,
                 as: 'tag',
             }],
+            order: [['updatedAt', 'DESC']]
         })
         res.json(group);
     }
