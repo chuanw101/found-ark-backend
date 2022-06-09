@@ -43,35 +43,38 @@ router.get("/:id", async (req, res) => {
                     include: [{
                         model: Character,
                         as: 'member_char',
+                        attributes: {exclude: ['$characters.json_data$']},
                         where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
                     }, {
                         model: Tag,
                         as: 'tag',
                     }],
-                }, {
-                    model: Group,
-                    as: 'applied',
-                    where: { '$characters.applied.groupmember.approved$': false }, required: false,
-                    include: [{
-                        model: Character,
-                        as: 'member_char',
-                        where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
-                    }, {
-                        model: Tag,
-                        as: 'tag',
-                    }],
-                }, {
-                    model: Group,
-                    as: 'created',
-                    include: [{
-                        model: Character,
-                        as: 'member_char',
-                        where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
-                    }, {
-                        model: Tag,
-                        as: 'tag',
-                    }],
-                },],
+                }, 
+                // {
+                //     model: Group,
+                //     as: 'applied',
+                //     where: { '$characters.applied.groupmember.approved$': false }, required: false,
+                //     include: [{
+                //         model: Character,
+                //         as: 'member_char',
+                //         where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                //     }, {
+                //         model: Tag,
+                //         as: 'tag',
+                //     }],
+                // }, {
+                //     model: Group,
+                //     as: 'created',
+                //     include: [{
+                //         model: Character,
+                //         as: 'member_char',
+                //         where: { '$characters.joined.member_char.groupmember.approved$': true }, required: false,
+                //     }, {
+                //         model: Tag,
+                //         as: 'tag',
+                //     }],
+                // },
+                ],
             },],
             // order: [
             //     [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
