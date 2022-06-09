@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Group, Tag, GroupTag, GroupMember, Character } = require('../../models');
+const { User, Group, Tag, GroupTag, GroupMember, Character, Notification } = require('../../models');
 const jwt = require("jsonwebtoken");
 
 //find all, only show groups in user region if logged in
@@ -180,7 +180,6 @@ router.get("/:id", async (req, res) => {
                 model: Tag,
                 as: 'tag',
             }],
-            order: [['updatedAt', 'DESC']]
         })
         res.json(group);
     }
@@ -339,6 +338,10 @@ router.delete("/:id", async (req, res) => {
             include: [{
                 model: Character,
                 as: 'creator',
+            }, {
+                model: Character,
+                as: 'member_char',
+                where: { '$member_char.groupmember.approved$': true }, required: false,
             }]
         });
         if (!curGroup) {
@@ -348,12 +351,23 @@ router.delete("/:id", async (req, res) => {
         if (curGroup?.creator?.owner_id != tokenData.id) {
             return res.status(401).json({ msg: "you don't have access to delete this Group!" });
         }
-        const delGroup = await Group.destroy({
+        let notis = [];
+        for (const c of curGroup.member_char) {
+            if (c.owner_id != curGroup?.creator?.owner_id) {
+                const newNoti = await Notification.create({
+                    receiver_id: c.owner_id,
+                    message: `The Group ${curGroup.group_name} was DELETED`,
+                    group_id: curGroup.id,
+                })
+                notis.push(newNoti);
+            }
+        }
+        await Group.destroy({
             where: {
                 id: req.params.id,
             }
         })
-        res.json(delGroup);
+        res.json(notis);
     } catch (err) {
         console.log(err);
         res.status(500).json({ msg: "an error occured", err });

@@ -21,7 +21,8 @@ const server = require('http').Server(app)
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000" || "https://found-ark.herokuapp.com",
+    origins: ["http://localhost:3000", "https://found-ark.herokuapp.com", "http://found-ark.herokuapp.com"]
+    //origin: "https://found-ark.herokuapp.com"
   },
 });
 
