@@ -180,7 +180,6 @@ router.get("/:id", async (req, res) => {
                 model: Tag,
                 as: 'tag',
             }],
-            order: [['updatedAt', 'DESC']]
         })
         res.json(group);
     }

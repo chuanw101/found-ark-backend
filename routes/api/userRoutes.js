@@ -48,6 +48,7 @@ router.get("/:id", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
+                    order: [['updatedAt', 'DESC']]
                 }, {
                     model: Group,
                     as: 'applied',
@@ -60,6 +61,7 @@ router.get("/:id", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
+                    order: [['updatedAt', 'DESC']]
                 }, {
                     model: Group,
                     as: 'created',
@@ -71,6 +73,7 @@ router.get("/:id", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
+                    order: [['updatedAt', 'DESC']]
                 },],
             },],
         })
