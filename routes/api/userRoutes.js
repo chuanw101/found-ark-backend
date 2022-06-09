@@ -40,7 +40,7 @@ router.get("/:id", async (req, res) => {
                     model: Group,
                     as: 'joined',
                     where: { '$characters.joined.groupmember.approved$': true }, required: false,
-                    order: [['updatedAt', 'DESC']],
+                    order: [['$characters.joined.updatedAt$', 'DESC']],
                     include: [{
                         model: Character,
                         as: 'member_char',
@@ -53,7 +53,7 @@ router.get("/:id", async (req, res) => {
                     model: Group,
                     as: 'applied',
                     where: { '$characters.applied.groupmember.approved$': false }, required: false,
-                    order: [['updatedAt', 'DESC']],
+                    order: [['$characters.applied.updatedAt$', 'DESC']],
                     include: [{
                         model: Character,
                         as: 'member_char',
@@ -65,7 +65,7 @@ router.get("/:id", async (req, res) => {
                 }, {
                     model: Group,
                     as: 'created',
-                    order: [['updatedAt', 'DESC']],
+                    order: [['$created.updatedAt$', 'DESC']],
                     include: [{
                         model: Character,
                         as: 'member_char',
@@ -74,7 +74,6 @@ router.get("/:id", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
-                    order: [['updatedAt', 'DESC']]
                 },],
             },],
         })
