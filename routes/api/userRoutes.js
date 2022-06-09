@@ -34,15 +34,16 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const user = await User.findByPk(req.params.id, {
-            order: [
-                [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
-            ],
             include: [{
                 model: Character,
                 include: [{
                     model: Group,
                     as: 'joined',
+                    seperate: true,
                     where: { '$characters.joined.groupmember.approved$': true }, required: false,
+                    order: [
+                        ['updatedAt', 'DESC']
+                    ],
                     include: [{
                         model: Character,
                         as: 'member_char',
