@@ -34,6 +34,9 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const user = await User.findByPk(req.params.id, {
+            order: [
+                [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
+            ],
             include: [{
                 model: Character,
                 include: [{
@@ -48,9 +51,6 @@ router.get("/:id", async (req, res) => {
                         model: Tag,
                         as: 'tag',
                     }],
-                    order: [
-                        [Character, { model: Group, as: 'joined' }, 'updatedAt', 'DESC']
-                    ],
                 }, {
                     model: Group,
                     as: 'applied',
