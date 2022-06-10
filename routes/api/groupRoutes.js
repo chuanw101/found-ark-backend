@@ -258,7 +258,7 @@ router.put("/:id", async (req, res) => {
             }
         });
         if (req.body.tags?.length) {
-            if (curGroup.tag.length) {
+            if (!curGroup.tag.length) {
                 return res.json(updatedGroup);
             }
             const oldTags = curGroup.tag.map(t=>t.tag_name);
