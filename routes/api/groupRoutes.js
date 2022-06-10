@@ -235,6 +235,9 @@ router.put("/:id", async (req, res) => {
             include: [{
                 model: Character,
                 as: 'creator',
+            }, {
+                model: Tag,
+                as: 'tag',
             }]
         });
         if (!curGroup) {
@@ -254,6 +257,34 @@ router.put("/:id", async (req, res) => {
                 id: req.params.id
             }
         });
+        if (req.body.tags?.length) {
+            if (curGroup.tag.length) {
+                return res.json(updatedGroup);
+            }
+            const oldTags = curGroup.tag.map(t=>t.tag_name);
+            const unChangedTags = req.body.tags.filter(t => oldTags.includes(t));
+            const newTags = req.body.tags.filter(t => !unChangedTags.include(t));
+            const delTags = oldTags.filter(t => !unChangedTags.include(t));
+            // create tag if not already in db, create association with group
+            for (const tag of newTags) {
+                const curTag = await Tag.findOrCreate({ where: { tag_name: tag } });
+                const data = curTag[0];
+                await GroupTag.create({
+                    group_id: curGroup.id,
+                    tag_id: data.id,
+                })
+            }
+            for (const tag of delTags) {
+                const curTag = await Tag.findOne({ where: { tag_name: tag } });
+                const data = curTag[0];
+                await GroupTag.destroy({
+                    where: {
+                        group_id: curGroup.id,
+                        tag_id: data.id,
+                    }
+                })
+            }
+        }
         res.json(updatedGroup);
     } catch (err) {
         console.log(err);
