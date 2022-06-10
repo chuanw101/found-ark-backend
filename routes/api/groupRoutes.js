@@ -263,8 +263,8 @@ router.put("/:id", async (req, res) => {
             }
             const oldTags = curGroup.tag.map(t=>t.tag_name);
             const unChangedTags = req.body.tags.filter(t => oldTags.includes(t));
-            const newTags = req.body.tags.filter(t => !unChangedTags.include(t));
-            const delTags = oldTags.filter(t => !unChangedTags.include(t));
+            const newTags = req.body.tags.filter(t => !unChangedTags.includes(t));
+            const delTags = oldTags.filter(t => !unChangedTags.includes(t));
             // create tag if not already in db, create association with group
             for (const tag of newTags) {
                 const curTag = await Tag.findOrCreate({ where: { tag_name: tag } });
