@@ -15,4 +15,7 @@ router.use('/groupmembers', groupmemberRoutes);
 const notificationRoutes = require('./notificationRoutes');
 router.use('/notifications', notificationRoutes);
 
+const tagRoutes = require('./tagRoutes');
+router.use('/tags', tagRoutes);
+
 module.exports = router;
