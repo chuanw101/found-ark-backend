@@ -1,10 +1,15 @@
 const router = require('express').Router();
-const { Tag } = require('../../models');
+const { Tag, Group } = require('../../models');
 
 //find all
 router.get("/", async (req, res) => {
     try {
-        const tags = await Tag.findAll();
+        const tags = await Tag.findAll({
+            include:[{
+                model: Group,
+                attributes: '$group.group_name$'
+            }]
+        });
         res.json(tags);
     }
     catch (err) {
