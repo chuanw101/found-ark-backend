@@ -275,7 +275,7 @@ router.put("/:id", async (req, res) => {
                 })
             }
             for (const tag of delTags) {
-                const curTag = await Tag.findOne({ where: { tag_name: tag } });
+                const curTag = await Tag.findAll({ where: { tag_name: tag } });
                 const data = curTag[0];
                 await GroupTag.destroy({
                     where: {
