@@ -7,7 +7,7 @@ router.get("/", async (req, res) => {
         const tags = await Tag.findAll({
             include:[{
                 model: Group,
-                attributes: '$group.group_name$'
+                //attributes: '$group.group_name$'
             }]
         });
         res.json(tags);
