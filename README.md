@@ -21,7 +21,7 @@ Backend for the project found-ark, CRUD functionality backend using sequelize an
 [Project 3 Presentation](https://docs.google.com/presentation/d/1NXK11FdoPJut3aMADcWJPN4QUTZq5fXoIUo3dQ_YX0E/edit?usp=sharing)
 
 ## Deployed Link
-[Deployed Found Ark Link](https://found-ark.herokuapp.com/)
+[Deployed Found Ark Link](https://found-ark.herokuapp.com/) <br>
 [Deployed Found Ark BackEnd Link](https://found-ark-backend.herokuapp.com/)
 
 ## ERD
